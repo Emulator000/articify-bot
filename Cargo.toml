@@ -1,0 +1,56 @@
+[package]
+name = "articify-bot"
+version = "0.1.0"
+authors = ["Emulator000 <emulator000@gmail.com>"]
+edition = "2021"
+
+[profile.dev]
+incremental = true
+split-debuginfo = "unpacked"
+overflow-checks = false
+opt-level = 0
+
+[profile.release-optimized]
+inherits = "release"
+incremental = false
+lto = "fat"
+codegen-units = 1
+opt-level = 3
+
+[features]
+dev = []
+prod = []
+
+[dependencies]
+# Telegram
+teloxide-core = { version = "^0.9", default-features = false, features = ["native-tls", "auto_send"] }
+
+# Stable Diffusion / Torch
+diffusers = { git =  "https://github.com/LaurentMazare/diffusers-rs", branch = "main", default-features = false }
+tch = { version = "^0.11", default-features = false }
+
+# Images
+image = { version = "^0.24", features = ["png"] }
+imageproc = { version = "^0.23", default-features = false }
+photon-rs = { version = "^0.3", default-features = false }
+
+# Tokio and Futures
+tokio = { version =  "^1.25", default-features = false, features = ["rt-multi-thread", "macros"] }
+futures = { version = "^0.3", default-features = false }
+
+# Serde
+serde = { version = "^1.0", default-features = false }
+serde_derive = { version = "^1.0", default-features = false }
+serde_json = { version = "^1.0", default-features = false }
+
+# Utils
+clap = { version = "^4.0", optional = true, features = ["derive"] }
+log = { version = "^0.4", default-features = false }
+pretty_env_logger = { version = "^0.4", default-features = false }
+thiserror = { version = "^1.0", default-features = false }
+anyhow = { version = "^1.0", default-features = false }
+rand = { version = "^0.8", default-features = false }
+sscanf = { version = "^0.4", default-features = false }
+itertools = { version = "^0.10", default-features = false }
+uuid = { version = "^1.3", default-features = false }
+mime = { version = "^0.3", default-features = false }

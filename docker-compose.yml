@@ -1,0 +1,17 @@
+version: '3.8'
+
+services:
+  bot:
+    build: ./.docker/images/bot
+    working_dir: /home/articify
+    volumes:
+      - ./:/home/articify:delegated
+      - ./target-docker:/home/articify/target:cached
+      - ./logs:/home/articify/logs:cached
+    ulimits:
+      nproc: 1000000
+      nofile:
+        soft: 1000000
+        hard: 1000000
+    env_file: .env
+    restart: always

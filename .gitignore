@@ -1,0 +1,17 @@
+/target
+/target/
+/target-docker/*
+!/target-docker/.gitkeep
+/logs/*
+!/logs/.gitkeep
+/data/*
+!/data/.gitkeep
+/temp/*
+!/temp/.gitkeep
+.idea
+articify-bot.iml
+.env
+**/*.rs.bk
+/*.data
+/*.gz
+*.local

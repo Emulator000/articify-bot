@@ -1,0 +1,74 @@
+[tasks.build]
+command = "cargo"
+args = ["build", "--features=dev"]
+
+[tasks.run]
+command = "cargo"
+args = ["run", "--features=dev"]
+
+[tasks.watch]
+command = "cargo"
+args = ["run", "--features=dev"]
+watch = true
+
+[tasks.release]
+command = "cargo"
+args = ["build", "--release"]
+
+[tasks.run-release]
+command = "cargo"
+args = ["run", "--release"]
+
+[tasks.format]
+install_crate = "rustfmt"
+command = "cargo"
+args = ["fmt"]
+
+[tasks.check-format]
+install_crate = "rustfmt"
+command = "cargo"
+args = ["fmt", "--", "--check"]
+
+[tasks.check]
+command = "cargo"
+args = ["check"]
+watch = true
+
+[tasks.clippy]
+command = "cargo"
+args = ["clippy", "--", "-D", "warnings"]
+watch = true
+
+[tasks.test]
+command = "cargo"
+args = ["test"]
+
+[tasks.docker-build]
+script = "docker compose build"
+
+[tasks.up]
+script = "docker compose up -d"
+
+[tasks.server-shell]
+script = "docker compose up -d && docker compose run bot bash"
+
+[tasks.start-local]
+command = "./target/debug/bot"
+
+[tasks.start]
+script = "./.scripts/run.sh start dev"
+
+[tasks.start-recreate]
+script = "./.scripts/run.sh start dev force-recreate"
+
+[tasks.start-prod]
+script = "./.scripts/run.sh start prod"
+
+[tasks.start-prod-recreate]
+script = "./.scripts/run.sh start prod force-recreate"
+
+[tasks.stop]
+script = "./.scripts/run.sh stop"
+
+[tasks.down]
+script = "./.scripts/run.sh down"
