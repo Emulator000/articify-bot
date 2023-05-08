@@ -1,7 +1,7 @@
 #!/bin/bash
 
 while true; do
-  "./bin/articify" >>./logs/articify.log
+  "./bin/articify-bot" >>./logs/articify.log
 
   echo "Process crashed with code $?. Restarting..." >&2
 
