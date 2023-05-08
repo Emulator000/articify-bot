@@ -1,4 +1,5 @@
 use crate::creator;
+use crate::creator::GUIDANCE_SCALE;
 use anyhow::Result;
 use sscanf::sscanf;
 use teloxide_core::adaptors::DefaultParseMode;
@@ -41,12 +42,41 @@ async fn handle_commands(
             log::debug!("New message received from {user:#?} with message {message:#?}.");
 
             if let Some(text) = message.text() {
-                if let Ok((seed, prompt)) = sscanf!(text, "/generate {i64} {str}") {
-                    let _ = generate_picture(bot, update, message, prompt, seed).await?;
+                if let Ok((seed, guidance_scale, prompt)) =
+                    sscanf!(text, "/generate {i64} {f64} {str}")
+                {
+                    let _ = generate_picture(bot, update, message, prompt, seed, guidance_scale)
+                        .await?;
+
+                    Ok(true)
+                } else if let Ok((seed, prompt)) = sscanf!(text, "/generate {i64} {str}") {
+                    let _ = generate_picture(bot, update, message, prompt, seed, GUIDANCE_SCALE)
+                        .await?;
+
+                    Ok(true)
+                } else if let Ok((guidance_scale, prompt)) = sscanf!(text, "/generate {f64} {str}")
+                {
+                    let _ = generate_picture(
+                        bot,
+                        update,
+                        message,
+                        prompt,
+                        creator::SEED,
+                        guidance_scale,
+                    )
+                    .await?;
 
                     Ok(true)
                 } else if let Ok(prompt) = sscanf!(text, "/generate {str}") {
-                    let _ = generate_picture(bot, update, message, prompt, creator::SEED).await?;
+                    let _ = generate_picture(
+                        bot,
+                        update,
+                        message,
+                        prompt,
+                        creator::SEED,
+                        GUIDANCE_SCALE,
+                    )
+                    .await?;
 
                     Ok(true)
                 } else if text.eq("/start") {
@@ -76,6 +106,7 @@ async fn generate_picture<S: AsRef<str>>(
     message: &Message,
     prompt: S,
     seed: i64,
+    guidance_scale: f64,
 ) -> Result<()> {
     let chat_id = message.chat.id;
 
@@ -89,7 +120,7 @@ async fn generate_picture<S: AsRef<str>>(
         .reply_to_message_id(message.id)
         .await?;
 
-    match creator::generate(prompt, seed, true, |text| {
+    match creator::generate(prompt, seed, guidance_scale, true, |text| {
         let bot = bot.clone();
         Box::pin(async move {
             let _ = bot.edit_message_text(chat_id, edit_message.id, text).await;

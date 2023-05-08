@@ -12,17 +12,33 @@ use uuid::Uuid;
 static DEBUG: bool = false;
 
 // Settings
-static MAX_WIDTH: u32 = 512;
-static MAX_HEIGHT: u32 = 768;
-static NEGATIVE_PROMPT: &str = "";
+static MAX_WIDTH: u32 = 704;
+static MAX_HEIGHT: u32 = 704;
+static NEGATIVE_PROMPT: &str = "blender, cropped, lowres, poorly drawn face, out of frame, \
+poorly drawn hands, blurry, bad art, blurred, text, watermark, disfigured, deformed, \
+(closed eyes:-2), logo, text, covered, writing, duplicate, saggy, drooping, \
+b&w, big hands, un-detailed skin, semi-realistic, cgi, 3d, render, sketch, cartoon, \
+drawing, anime, ugly mouth, ugly eyes, missing teeth, crooked teeth, close up, cropped, out of frame, worst quality, \
+low quality, jpeg artifacts, ugly, duplicate, morbid, mutilated, (extra fingers:1.2), mutated hands, poorly drawn hands, \
+poorly drawn face, mutation, deformed, (blurry:1.2), dehydrated, bad anatomy, bad proportions, extra limbs, \
+cloned face, disfigured, gross proportions, malformed limbs, missing arms, missing legs, extra arms, \
+extra legs, fused fingers, too many fingers, long neck, (covered:1.2), (covers:1.5), covering, \
+anorexic, emaciated, black & white, \
+missing nipple, asymmetrical nipples, monochrome, deformed, \
+distorted, disfigured, \
+3d render, cartoon, blurry, duplicate, duplicate body parts, disfigured, poorly drawn, \
+missing limbs, logo, signature, text, words, low res, boring, (artifacts:1.8), bad art, gross, ugly, \
+poor quality, low quality, poorly drawn, bad anatomy, wrong anatomy, \
+malformed anatomy, (malformed:2), bad lips, \
+worst quality, duplicate";
 
 // Stable Diffusion - Values
 static VAE_CONSTANT: f64 = 0.18215;
-static GUIDANCE_SCALE: f64 = 7.5;
+pub static GUIDANCE_SCALE: f64 = 15.0;
 
 // Stable Diffusion - Configuration
 pub static SEED: i64 = 0;
-static STEPS: usize = 50;
+static STEPS: usize = 35;
 static SKIP_STEPS: bool = false;
 static DEVICE: Device = Device::Cuda(0);
 static VOCAB_PATH: &'static str = "data/vocab.txt";
@@ -97,6 +113,7 @@ fn generate_embeddings(tokens: Vec<Tensor>, text_model: &ClipTextTransformer) ->
 pub async fn generate<S: AsRef<str>>(
     prompt: S,
     seed: i64,
+    guidance_scale: f64,
     watermark: bool,
     callback: impl Fn(String) -> Pin<Box<dyn Future<Output = ()>>>,
 ) -> Result<Vec<u8>> {
@@ -185,7 +202,7 @@ pub async fn generate<S: AsRef<str>>(
                 .collect_tuple()
                 .context("Couldn't collect tuples")?;
             let noise_pred =
-                &noise_pred_uncond + (noise_pred_text - &noise_pred_uncond) * GUIDANCE_SCALE;
+                &noise_pred_uncond + (noise_pred_text - &noise_pred_uncond) * guidance_scale;
 
             // compute the previous noisy sample x_t -> x_t-1
             latents = scheduler.step(&noise_pred, timestep, &latents)
@@ -217,7 +234,7 @@ pub async fn generate<S: AsRef<str>>(
         log::info!("Applying watermark...");
         callback("⏳ Applying watermark...".into()).await;
         let water_mark = photon_rs::transform::resize(
-            &photon_rs::native::open_image("assets/watermark.png")?,
+            &photon_rs::native::open_image("assets/watermark704.png")?,
             get_max_width(),
             get_max_height(),
             photon_rs::transform::SamplingFilter::Lanczos3,
