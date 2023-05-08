@@ -53,7 +53,7 @@ script = "docker compose up -d"
 script = "docker compose up -d && docker compose run bot bash"
 
 [tasks.start-local]
-command = "./target/debug/bot"
+command = "./target/debug/articify-bot"
 
 [tasks.start]
 script = "./.scripts/run.sh start dev"

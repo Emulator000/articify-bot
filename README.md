@@ -36,7 +36,7 @@ $ cargo install --force cargo-make
 ## Commands
 Running:
 
-* `./target/debug/bot` or `cargo make start-local` starts the local instance (WARNING: you must have MongoDB running locally)
+* `./target/debug/articify-bot` or `cargo make start-local` starts the local instance
 * `./.scripts/run.sh start` or `cargo make start` for default: starts the dev instance
 * `./.scripts/run.sh start prod` or `cargo make start-prod` for the production instance
 
@@ -45,3 +45,13 @@ Running:
 Stopping:
 
 * `./.scripts/run.sh stop` or `cargo make stop` to shutdown all containers
+
+## Data folder
+
+You must have all these updated Stable Diffusion weights in order to run the bot:
+- `data/vocab.txt`
+- `data/clip_v2.1.ot`
+- `data/unet_v2.1.ot`
+- `data/vae-new.ot`
+
+You can grab copies from [here](https://huggingface.co/lmz/rust-stable-diffusion-v2-1/tree/main/weights).
